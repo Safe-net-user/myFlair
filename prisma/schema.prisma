@@ -1,0 +1,224 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum AdditionalServiceType {
+  PER_DAY
+  PER_PAGE
+  PER_PIECE
+}
+
+enum SubscriptionArgumentType {
+  NEGATIVE
+  POSITIVE
+}
+
+enum SubscriptionType {
+  MONTHLY
+  YEARLY
+}
+
+enum ReservationStatus {
+  CANCELED
+  PENDING
+  DONE
+}
+
+enum UserRole {
+  PERSONAL
+  PROFESSIONAL
+  ADMINISTRATOR
+}
+
+model User {
+  id                String    @id @default(cuid())
+  stripeCustomerId  String?
+  image             String
+  gallery           String[]
+  service           String?
+  role              UserRole
+  username          String    @unique
+  firstName         String
+  lastName          String
+  address           Json
+  enterprise        String?
+  homeServiceOnly   Boolean   @default(false)
+  email             String    @unique
+  password          String
+  forgotPassword    String    @unique @default(uuid())
+  // verificationToken String    @unique @default(uuid())
+  phone             String
+  website           String?
+  orders            Order[]
+  reviews           Review[]
+  cart              Cart?
+  preferences       Json
+  subscription      SubscriptionType?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime? @updatedAt
+}
+
+model Post {
+  id                          Int      @id @default(autoincrement())
+  image                       String
+  title                       String
+  description                 String
+  durationWeekStartHour       Int
+  durationWeekStartMinute     Int
+  durationWeekEndHour         Int
+  durationWeekEndMinute       Int
+  durationSaturdayStartHour   Int
+  durationSaturdayStartMinute Int
+  durationSaturdayEndHour     Int
+  durationSaturdayEndMinute   Int
+  weekPrice                   String
+  saturdayPrice               String
+  stock                       Int
+  valide                      Boolean  @default(true)
+  alt                         String?  
+  createdAt                   DateTime @default(now())
+  updatedAt                   DateTime @updatedAt
+}
+
+model Training {
+  id          String    @id @default(cuid())
+  image       String
+  alt         String
+  title       String
+  description String
+  price       Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+}
+
+model AdditionalService {
+  id          String                @id @default(cuid())
+  image       String
+  alt         String
+  title       String
+  description String
+  price       Int
+  sales       Int
+  quantity    Int
+  type        AdditionalServiceType
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime?             @updatedAt
+}
+
+model BusinessBooster {
+  id          String    @id @default(cuid())
+  image       String
+  alt         String
+  title       String
+  description String
+  quantity    Int
+  price       Float
+  dates       Json[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+}
+
+model Reservation {
+  id             String            @id @default(cuid())
+  personalId     String
+  professionalId String
+  status         ReservationStatus
+  reason         String?
+  price          Float
+  date           DateTime
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime?         @updatedAt
+}
+
+model Review {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating    Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@unique([userId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  userId    String
+  timestamp DateTime @default(now())
+}
+
+model Cart {
+  id        String     @id @default(uuid())
+  items     CartItem[]
+  user      User       @relation(fields: [userId], references: [id])
+  userId    String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime?  @updatedAt
+}
+
+model CartItem {
+  id        String  @id @default(uuid())
+  quantity  Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  cartId    String
+}
+
+model Product {
+  id          String     @id @default(uuid())
+  title       String
+  description String
+  imageUrl    String
+  price       Int
+  CartItem    CartItem[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Transaction {
+  id                 String   @id @default(cuid())
+  amount             Int
+  amountExcludingTax Int
+  amountIncludingTax Int
+  createdAt          DateTime @default(now())
+}
+
+model Order {
+  id        String    @id @default(cuid())
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Subscription {
+  id          String           @id @default(cuid())
+  title       String
+  description String
+  price       Int
+  arguments   Json[]
+  type        SubscriptionType
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime?        @updatedAt
+}
+
+model Service {
+  id            String    @id @default(cuid())
+  image         String
+  title         String
+  description   String
+  category      String
+  price         String
+  domicile      Boolean
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime? @updatedAt
+  dureeRDV      String
+}

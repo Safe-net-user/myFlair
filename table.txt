@@ -1,0 +1,417 @@
+/* 'use client';
+
+import {
+  ColumnDef,
+  ColumnFiltersState,
+  SortingState,
+  VisibilityState,
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  getFacetedRowModel,
+  getFacetedUniqueValues,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+
+import {
+  Table,
+  TableBody,
+  TableCell as UiTableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { TabsContent } from '@/components/tabs';
+import { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
+import { PenIcon } from 'lucide-react';
+import { CheckIcon, Cross1Icon, Cross2Icon } from '@radix-ui/react-icons';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+
+type Option = {
+  label: string;
+  value: string;
+};
+
+const TableCell = ({
+  getValue,
+  row,
+  column,
+  table,
+}: {
+  getValue: any;
+  row: any;
+  column: any;
+  table: any;
+}) => {
+  const initialValue = getValue();
+  const columnMeta = column.columnDef.meta;
+  const tableMeta = table.options.meta;
+  const [value, setValue] = useState(initialValue);
+  useEffect(() => {
+    setValue(initialValue);
+  }, [initialValue]);
+  const onBlur = () => {
+    tableMeta?.updateData(row.index, column.id, value);
+  };
+  const onSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setValue(e.target.value);
+    tableMeta?.updateData(row.index, column.id, e.target.value);
+  };
+  if (tableMeta?.editedRows[row.id]) {
+    return columnMeta?.type === 'select' ? (
+      <UiTableCell>
+        <select onChange={onSelectChange} value={initialValue}>
+          {columnMeta?.options?.map((option: Option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </UiTableCell>
+    ) : (
+      <UiTableCell>
+        <input
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onBlur={onBlur}
+          type={columnMeta?.type || 'text'}
+        />
+      </UiTableCell>
+    );
+  }
+  return <UiTableCell>{value}</UiTableCell>;
+};
+
+const EditCell = ({ row, table }: { row: any; table: any }) => {
+  const removeRow = () => {
+    meta?.removeRow(row.index);
+  };
+
+  const meta = table.options.meta;
+  const setEditedRows = (e: MouseEvent<HTMLButtonElement>) => {
+    const elName = e.currentTarget.name;
+    meta?.setEditedRows((old: []) => ({
+      ...old,
+      [row.id]: !old[row.id],
+    }));
+    if (elName !== 'edit') {
+      meta?.revertData(row.index, e.currentTarget.name === 'cancel');
+    }
+  };
+  return (
+    <div className="edit-cell-container flex items-center space-x-4">
+      {meta?.editedRows[row.id] ? (
+        <div className="edit-cell-action">
+          <button onClick={setEditedRows} name="cancel">
+            ⚊
+          </button>{' '}
+          <button onClick={setEditedRows} name="done">
+            <CheckIcon className="h-4 w-4" />
+          </button>
+        </div>
+      ) : (
+        <div className="edit-cell-action flex items-center space-x-4">
+          <Button
+            onClick={setEditedRows}
+            size="icon"
+            variant="outline"
+            name="edit"
+          >
+            <PenIcon className="h-4 w-4" />
+          </Button>
+          <Button
+            onClick={removeRow}
+            size="icon"
+            variant="destructive"
+            name="remove"
+          >
+            <Cross1Icon className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
+
+      {/*       <input
+      type="checkbox"
+        checked={row.getIsSelected()}
+        onChange={row.getToggleSelectedHandler()}
+      /> */}
+
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={row.getToggleSelectedHandler()}
+
+        // defaultValue={row.getIsSelected()}
+        // onCheckedChange={row.getToggleSelectedHandler()}
+      />
+    </div>
+  );
+};
+
+const columnHelper = createColumnHelper<Student>();
+
+const columns = [
+  columnHelper.accessor('studentId', {
+    header: 'Student ID',
+    cell: TableCell,
+    meta: {
+      type: 'number',
+    },
+  }),
+  columnHelper.accessor('name', {
+    header: 'Full Name',
+    cell: TableCell,
+    meta: {
+      type: 'text',
+    },
+  }),
+  columnHelper.accessor('dateOfBirth', {
+    header: 'Date Of Birth',
+    cell: TableCell,
+    meta: {
+      type: 'date',
+    },
+  }),
+  columnHelper.accessor('major', {
+    header: 'Major',
+    cell: TableCell,
+    meta: {
+      type: 'select',
+      options: [
+        { value: 'Computer Science', label: 'Computer Science' },
+        { value: 'Communications', label: 'Communications' },
+        { value: 'Business', label: 'Business' },
+        { value: 'Psychology', label: 'Psychology' },
+      ],
+    },
+  }),
+  columnHelper.display({
+    id: 'edit',
+    cell: EditCell,
+  }),
+];
+
+type Student = {
+  studentId: number;
+  name: string;
+  dateOfBirth: string;
+  major: string;
+};
+
+const defaultData: Student[] = [
+  {
+    studentId: 1111,
+    name: 'Bahar Constantia',
+    dateOfBirth: '1984-01-04',
+    major: 'Computer Science',
+  },
+  {
+    studentId: 2222,
+    name: 'Harold Nona',
+    dateOfBirth: '1961-05-10',
+    major: 'Communications',
+  },
+  {
+    studentId: 3333,
+    name: 'Raginolf Arnulf',
+    dateOfBirth: '1991-10-12',
+    major: 'Business',
+  },
+  {
+    studentId: 4444,
+    name: 'Marvyn Wendi',
+    dateOfBirth: '1978-09-24',
+    major: 'Psychology',
+  },
+];
+
+export const FooterCell = ({ table }: { table: any }) => {
+  const meta = table.options.meta;
+
+  const removeRows = () => {
+    meta.removeSelectedRows(
+      table.getSelectedRowModel().rows.map((row: any) => row.index),
+    );
+    table.resetRowSelection();
+  };
+  const selectedRows = table.getSelectedRowModel().rows;
+
+  return (
+    <div className="footer-buttons">
+      {selectedRows.length > 0 ? (
+        <button className="remove-button" onClick={removeRows}>
+          Remove Selected x
+        </button>
+      ) : null}
+      <button className="add-button" onClick={meta?.addRow}>
+        Add New +
+      </button>
+    </div>
+  );
+};
+
+export default function OrdersTab() {
+  const [rowSelection, setRowSelection] = useState({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [sorting, setSorting] = useState<SortingState>([]);
+
+  const [editedRows, setEditedRows] = useState({});
+  const [data, setData] = useState(defaultData);
+
+  const [originalData, setOriginalData] = useState(() => [...defaultData]);
+
+  const table = useReactTable({
+    data,
+    columns,
+    state: {
+      sorting,
+      columnVisibility,
+      rowSelection,
+      columnFilters,
+    },
+    enableRowSelection: true,
+    onRowSelectionChange: setRowSelection,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+    meta: {
+      editedRows,
+      setEditedRows,
+      revertData: (rowIndex: number, revert: boolean) => {
+        if (revert) {
+          setData((old) =>
+            old.map((row, index) =>
+              index === rowIndex ? originalData[rowIndex] : row,
+            ),
+          );
+        } else {
+          setOriginalData((old) =>
+            old.map((row, index) =>
+              index === rowIndex ? data[rowIndex] : row,
+            ),
+          );
+        }
+      },
+      updateData: (rowIndex: number, columnId: string, value: string) => {
+        setData((old) =>
+          old.map((row, index) => {
+            if (index === rowIndex) {
+              return {
+                ...old[rowIndex],
+                [columnId]: value,
+              };
+            }
+            return row;
+          }),
+        );
+      },
+      addRow: () => {
+        const newRow: Student = {
+          studentId: Math.floor(Math.random() * 10000),
+          name: '',
+          dateOfBirth: '',
+          major: '',
+        };
+        const setFunc = (old: Student[]) => [...old, newRow];
+        setData(setFunc);
+        setOriginalData(setFunc);
+      },
+      removeRow: (rowIndex: number) => {
+        const setFilterFunc = (old: Student[]) =>
+          old.filter((_row: Student, index: number) => index !== rowIndex);
+        setData(setFilterFunc);
+        setOriginalData(setFilterFunc);
+      },
+      removeSelectedRows: (selectedRows: number[]) => {
+        const setFilterFunc = (old: Student[]) =>
+          old.filter((_row, index) => !selectedRows.includes(index));
+        setData(setFilterFunc);
+        setOriginalData(setFilterFunc);
+      },
+    },
+  });
+
+  return (
+    <TabsContent title="Commandes" value="orders">
+      <div className="space-y-4">
+        {/* toolbar */}
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id} colSpan={header.colSpan}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </>
+                      /*                     <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell> */
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  {/*                 <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  Aucun résultat.
+                </TableCell> */}
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+        <tfoot>
+          <tr>
+            <th colSpan={table.getCenterLeafColumns().length} align="right">
+              <FooterCell table={table} />
+            </th>
+          </tr>
+        </tfoot>
+        {/* pagination */}
+      </div>
+    </TabsContent>
+  );
+}
+ */
