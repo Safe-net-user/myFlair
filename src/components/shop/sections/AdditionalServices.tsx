@@ -1,12 +1,8 @@
 'use client';
 
-import { type AdditionalService } from '@prisma/client';
-
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-
-import { getAllAdditionalServices } from '@/data/additional-service';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -26,20 +22,59 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 
-const types = {
-  PER_DAY: 'jour',
-  PER_PAGE: '',
-  PER_PIECE: 'pièce',
-};
+interface AdditionalService {
+  id: string,
+  image: string;
+  alt: string;
+  title: string;
+  description: string;
+  price: number;
+  type: string;
+  sales: number | null; 
+  quantity: number;
+  [key: string]: string | boolean | number | undefined | null | Date; 
+}
 
 export default function AdditionalServices() {
-  const [additionalServices, setAdditionalServices] = useState<
-    AdditionalService[]
-  >([]);
+  const [additionalServices, setAdditionalServices] = useState<AdditionalService[]>([]);
+  const [quantity, setQuantity] = useState<{ [id: string]: number }>({});
+  const [buttonInvalid, setButtonInvalid] = useState<{ [id: string]: boolean }>({});
+
+  const handleServiceChange = (id: string, value: number) => {
+    setQuantity((prevQuantities) => ({
+      ...prevQuantities,
+      [id]: value,
+    }));
+  };
 
   useEffect(() => {
-    (async () => setAdditionalServices(await getAllAdditionalServices()))();
+    fetch('/api/serviceAdditionnel/get', {
+      method: 'GET'
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data: AdditionalService[]) => {
+        console.log('Services fetched:', data);
+        setAdditionalServices(data);
+      })
+      .catch(error => console.error('Error fetching services:', error));
   }, []);
+
+  useEffect(() => {
+    const updatedButtonInvalid = { ...buttonInvalid };
+    additionalServices.forEach((service) => {
+      if (quantity[service.id] > service.quantity) {
+        updatedButtonInvalid[service.id] = true;
+      } else {
+        updatedButtonInvalid[service.id] = false;
+      }
+    });
+    setButtonInvalid(updatedButtonInvalid);
+  }, [quantity, additionalServices]);
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -64,16 +99,23 @@ export default function AdditionalServices() {
                   style: 'currency',
                   currency: 'EUR',
                 }).format(additionalService.price)}
-                /{types[additionalService.type]}
+                /{additionalService.type}
                 <div className="flex items-center gap-x-2 pt-2">
                   Quantité:
                   <Input
                     className="w-[100px]"
-                    defaultValue={additionalService.quantity}
+                    value={quantity[additionalService.id] || 1}
                     max={additionalService.quantity}
+                    onChange={(e) => handleServiceChange(additionalService.id, Number(e.target.value))}
                     placeholder="Quantité"
                     type="number"
                   />
+                  {quantity[additionalService.id] === additionalService.quantity &&(
+                    <span style={{ color: 'orange' }}>Limite disponible atteinte</span>
+                  )}
+                  {quantity[additionalService.id] > additionalService.quantity && (
+                    <span style={{ color: '#d50000' }}>Demande supérieure aux stocks</span>
+                  )}
                 </div>
               </CardDescription>
             </CardContent>
@@ -82,7 +124,7 @@ export default function AdditionalServices() {
               <DialogTrigger>
                 <Button variant="outline">Détails</Button>
               </DialogTrigger>
-              <Button onClick={() => {}}>Réserver</Button>
+              <Button disabled={buttonInvalid[additionalService.id]} onClick={() => {}}>Réserver</Button>
             </CardFooter>
           </Card>
 

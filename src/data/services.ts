@@ -99,17 +99,6 @@ export const deleteBusinessBoostersById = async (
   return !!success;
 };
 
-export const getAllAdditionalServices = async (): Promise<
-  AdditionalService[]
-> => {
-  return [];
-
-  return await prisma.additionalService.findMany({
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
-};
 
 export const getAllTrainings = async (): Promise<Training[]> => {
   return [];

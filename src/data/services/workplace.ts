@@ -1,31 +1,35 @@
 'use server';
 
-import type { Workplace } from '@prisma/client';
+import type { Post } from '@prisma/client';
 
 import { prisma } from '@/lib/prisma';
 
-export const getAllWorkplaces = async (): Promise<Workplace[]> => {
-  return [];
-
-  return await prisma.workplace.findMany();
+export const getAllWorkplaces = async (): Promise<Post[]> => {
+  return await prisma.post.findMany();
 };
 
 export const getWorkplaceById = async (
-  id: string,
-): Promise<Workplace | null> => {
-  return null;
+  id: number,
+): Promise<Post | null> => {
 
-  return await prisma.workplace.findUnique({
+  return await prisma.post.findUnique({
     where: {
       id,
     },
   });
 };
 
-export const deleteWorkplaceById = async (id: string): Promise<boolean> => {
-  return !!(await prisma.workplace.delete({
-    where: {
-      id,
-    },
-  }));
+
+export const deleteWorkplaceById = async (id: number): Promise<void> => {
+  try {
+    await prisma.post.delete({
+      where: {
+        id: id,
+      },
+    });
+    console.log(`Poste de travail avec l'ID ${id} supprimé avec succès.`);
+  } catch (error) {
+    console.error(`Erreur lors de la suppression du poste de travail avec l'ID ${id}:`, error);
+    throw new Error(`Erreur lors de la suppression du poste de travail avec l'ID ${id}`);
+  }
 };

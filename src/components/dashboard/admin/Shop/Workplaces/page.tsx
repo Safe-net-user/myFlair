@@ -159,7 +159,7 @@ const AddPost = () => {
       if (response.status === 201) {
         toast.success('Poste créé avec succès');
         setTimeout(() => {
-          router.push('/dashboard/professional');
+          router.push('/');
         }, 4800); 
       } else {
         toast.error('Erreur lors de la création du poste');
@@ -405,12 +405,12 @@ const AddPost = () => {
                           }}
                         >
                           <p className="flex items-center justify-center">Cliquez ou glissez et déposez des fichiers ici</p>
-                          <p className="text-sm">Formats pris en charge: JPEG, PNG, JPG et SVG</p>
+                          <p className="text-sm">Formats pris en charge: JPEG, PNG, JPG, WebP et SVG</p>
                         </div>
                         <input
                           ref={fileInputRef}
                           type="file"
-                          accept="image/jpeg, image/png, image/jpg, image/svg"
+                          accept="image/jpeg, image/png, image/jpg, image/svg, image/webp"
                           style={{ display: 'none' }}
                           onChange={handleFileInputChange}
                         />

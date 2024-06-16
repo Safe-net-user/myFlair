@@ -1,4 +1,3 @@
-import { PrismaClient } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 import { htmlToText } from 'html-to-text';
 import { prisma } from '@/lib/prisma';
@@ -8,27 +7,24 @@ import { prisma } from '@/lib/prisma';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { title, description, category, price, domicile, image, dureeRDV } = body;
+    const { title, description, alt, price, quantity, image, type, sales } = body;
 
     console.log('Données reçues:', body);
 
-    // Vérification des champs obligatoires
-    if (!title || !description || !category || !price || dureeRDV === undefined) {
-      console.error('Champs requis manquants');
-      return NextResponse.json({ error: 'Champs requis manquants' }, { status: 400 });
-    }
+
 
     const descriptionWithoutHtml = htmlToText(description);
 
-    const service = await prisma.service.create({
+    const service = await prisma.additionalService.create({
       data: {
-        title,
-        description: descriptionWithoutHtml,
-        category,
-        price,
-        domicile,
         image,
-        dureeRDV,
+        alt,
+        title,
+        description:descriptionWithoutHtml,
+        price:parseInt(price, 10),
+        quantity:parseInt(quantity, 10),
+        type,
+        sales,
       },
     });
 

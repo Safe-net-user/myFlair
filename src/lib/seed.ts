@@ -49,7 +49,7 @@ async function main() {
         durationSaturdayEndHour: 10,
         durationSaturdayEndMinute: 1,
         image: 'https://res.cloudinary.com/dqgxjbltt/image/upload/v1717710952/pahv29bejimucv5rarb2.png',
-        alt: 'Description de l\'image'  // Ajoutez ce champ, ou fournissez une valeur par défaut
+        alt: 'Description de l\'image'  
       },
     });
 
@@ -72,15 +72,15 @@ async function createUser() {
       image: '',
       gallery: [],
      
-      role: UserRole.PERSONAL,
-      username: 'demo-personal',
+      role: UserRole.ADMINISTRATOR,
+      username: 'demo-admin',
       firstName: 'demo',
-      lastName: 'personal',
+      lastName: 'admin',
       address: {},
       enterprise: '',
       homeServiceOnly: false,
-      email: 'demo-personal@myflair.fr',
-      password: hash('demo-personal'),
+      email: 'demo-administrator@myflair.fr',
+      password: hash('demo-administrator'),
       phone: '+33123456789',
       website: '',
       preferences: {
@@ -170,8 +170,8 @@ async function createBusinessBooster() {
 }
 
 (async () => {
- //console.log(await createUser());
- console.log(await main());
+  console.log(await createUser());
+ //console.log(await main());
   //console.log(await createService())
 
  

@@ -78,12 +78,3 @@ export const getTurnoverIncludingTaxByDateRange = async (
   return sum;
 };
 
-export const getAllAdditionalServicesBySales = async () => {
-  return [];
-
-  return await prisma.additionalService.findMany({
-    orderBy: {
-      sales: 'desc',
-    },
-  });
-};
