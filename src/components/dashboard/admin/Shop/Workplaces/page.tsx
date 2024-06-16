@@ -151,12 +151,12 @@ const AddPost = () => {
     setIsLoading(true); 
     try {
       const postData = posts[0];
-      const response = await axios.post('/api/post', postData, {
+      const response = await axios.post('/api/post/create', postData, {
         headers: {
           'Content-Type': 'application/json',
         },
       });
-      if (response.status === 201) {
+      if (response.status === 200) {
         toast.success('Poste créé avec succès');
         setTimeout(() => {
           router.push('/');
