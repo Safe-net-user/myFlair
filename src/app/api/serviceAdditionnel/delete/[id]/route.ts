@@ -3,16 +3,18 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function DELETE(req: NextRequest, res: NextResponse) {
   if (req.method === 'DELETE') {
-    const url = req.url;
-    console.log(url)
-    const segments = url?.split('/').filter(Boolean);
+    const url = new URL(req.url);
+    console.log('SALAM');
+    console.log(url);
 
-    const idService = `${segments}`
-    console.log(idService)
+    const idService = url.searchParams.get('id');
+    console.log(idService);
+
+    if (!idService) {
+      return NextResponse.json({ error: 'ID not provided' }, { status: 400 });
+    }
 
     try {
-      
-
       await prisma.additionalService.delete({
         where: { id: idService },
       });
@@ -24,7 +26,6 @@ export async function DELETE(req: NextRequest, res: NextResponse) {
       return NextResponse.json({ error: 'An error occurred while deleting the service' }, { status: 500 });
     }
   } else {
-    // Réponse pour les méthodes non autorisées
    
     return NextResponse.json({ error: `Method ${req.method} Not Allowed` }, { status: 405 });
   }
