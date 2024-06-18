@@ -206,7 +206,7 @@ export default function BusinessBoostersTab() {
                           )}
                         />
 <br />
-<Calendar/>
+
                         <>
                           {dates.length > 0 && <p>Dates ajoutées:</p>}
                           {dates.map((date, index) => (
