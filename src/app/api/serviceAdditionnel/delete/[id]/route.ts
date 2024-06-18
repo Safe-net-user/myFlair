@@ -7,7 +7,7 @@ export async function DELETE(req: NextRequest, res: NextResponse) {
     console.log(url)
     const segments = url?.split('/').filter(Boolean);
 
-    const idService = 'clxf0o5he0005s445likmkc4q'
+    const idService = `${segments}`
     console.log(idService)
 
     try {
