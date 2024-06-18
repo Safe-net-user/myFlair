@@ -5,9 +5,8 @@ import type { BusinessBooster } from '@prisma/client';
 import * as z from 'zod';
 
 import ReactQuill from 'react-quill';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { addDays, format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { fr } from 'date-fns/locale';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,13 +14,26 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { businessBoosterSchema } from '@/schemas';
 import { getAllBusinessBoosters, createBusinessBooster } from '@/data/services';
 
+// Partie Date picker double 
+
+import { addDays, format } from "date-fns"
+import { Calendar as CalendarIcon } from "lucide-react"
+import { DateRange } from "react-day-picker"
+ 
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
 
 import { error, success, toastAction } from '@/components/toast';
 import { ImageUploader } from '@/components/image-uploader';
 
-import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
+
 import {
   Dialog,
   DialogContent,
@@ -33,16 +45,12 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Form, FormItem, FormControl, FormField } from '@/components/ui/form';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+
 import { TabsContent } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
 
 import 'react-quill/dist/quill.snow.css';
-import { DateRange } from 'react-day-picker';
+
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { TrashIcon } from '@radix-ui/react-icons';
 export default function BusinessBoostersTab() {
@@ -60,6 +68,11 @@ export default function BusinessBoostersTab() {
 
   const [dates, setDates] = useState<DateRange[]>([]);
 
+
+  const [date, setDate] = React.useState<DateRange | undefined>({
+    from: new Date(2022, 0, 20),
+    to: addDays(new Date(2022, 0, 20), 20),
+  })
   const form = useForm<z.infer<typeof businessBoosterSchema>>({
     resolver: zodResolver(businessBoosterSchema),
     defaultValues: {
@@ -96,11 +109,11 @@ export default function BusinessBoostersTab() {
   return (
     <TabsContent value="business-boosters" className="space-y-4">
       <div className="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
-        <div className="flex items-center justify-between space-y-2">
+        <div  className="flex items-center justify-between space-y-2">
           <h2 className="text-2xl font-bold tracking-tight">
             Business boosters
           </h2>
-
+    
           <Dialog>
             <DialogTrigger asChild>
               <Button>Ajouter</Button>
@@ -108,35 +121,18 @@ export default function BusinessBoostersTab() {
             <DialogContent className="max-h-screen overflow-y-scroll">
               <ScrollArea>
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)}>
+                  <form style={{paddingLeft:'1%', paddingRight:'1%'}} onSubmit={form.handleSubmit(onSubmit)}>
                     <DialogHeader>
                       <DialogTitle>Business booster</DialogTitle>
                       <DialogDescription>
                         Ajoutez un business booster.
                       </DialogDescription>
                       <div className="space-y-4">
-                        <ImageUploader
-                          callback={(url: string) =>
-                            form.setValue('image', url)
-                          }
-                        />
+                       
+                      
 
-                        <FormField
-                          control={form.control}
-                          name="alt"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                <Input
-                                  {...field}
-                                  className="w-[200px]"
-                                  placeholder="Texte alternatif"
-                                />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-
+                        
+                        <label>Titre</label>
                         <FormField
                           control={form.control}
                           name="title"
@@ -145,14 +141,15 @@ export default function BusinessBoostersTab() {
                               <FormControl>
                                 <Input
                                   {...field}
-                                  className="w-[200px]"
+                                  className=""
                                   placeholder="Titre"
                                 />
                               </FormControl>
                             </FormItem>
                           )}
                         />
-
+                        <br />
+<label htmlFor="">Description</label>
                         <FormField
                           control={form.control}
                           name="description"
@@ -168,7 +165,8 @@ export default function BusinessBoostersTab() {
                             </FormItem>
                           )}
                         />
-
+                        <br />
+                          <label htmlFor="">Stock</label>
                         <FormField
                           control={form.control}
                           name="quantity"
@@ -179,7 +177,7 @@ export default function BusinessBoostersTab() {
                                   {...form.register('quantity', {
                                     valueAsNumber: true,
                                   })}
-                                  className="w-[200px]"
+                                  className=""
                                   placeholder="Quantité"
                                   type="number"
                                 />
@@ -187,7 +185,8 @@ export default function BusinessBoostersTab() {
                             </FormItem>
                           )}
                         />
-
+                        <br />
+                        <label htmlFor="">Prix</label>
                         <FormField
                           control={form.control}
                           name="price"
@@ -198,7 +197,7 @@ export default function BusinessBoostersTab() {
                                   {...form.register('price', {
                                     valueAsNumber: true,
                                   })}
-                                  className="w-[200px]"
+                                  className=""
                                   placeholder="Prix"
                                   type="number"
                                 />
@@ -206,60 +205,8 @@ export default function BusinessBoostersTab() {
                             </FormItem>
                           )}
                         />
-
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button
-                              id="date"
-                              variant={'outline'}
-                              className="flex w-[200px] items-center"
-                            >
-                              {currentDate.from ? (
-                                currentDate.to ? (
-                                  <>
-                                    {format(currentDate.from, 'dd LLL y', {
-                                      locale: fr,
-                                    })}{' '}
-                                    -{' '}
-                                    {format(currentDate.to, 'dd LLL y', {
-                                      locale: fr,
-                                    })}
-                                  </>
-                                ) : (
-                                  format(currentDate.from, 'dd LLL y', {
-                                    locale: fr,
-                                  })
-                                )
-                              ) : (
-                                <span>Choisir une date</span>
-                              )}
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="center">
-                            <FormField
-                              control={form.control}
-                              name="dates"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormControl>
-                                    <Calendar
-                                      {...field}
-                                      initialFocus
-                                      defaultMonth={currentDate.from}
-                                      mode="range"
-                                      locale={fr}
-                                      numberOfMonths={2}
-                                      onSelect={(date) =>
-                                        date?.from && setCurrentDate(date)
-                                      }
-                                      selected={currentDate}
-                                    />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                          </PopoverContent>
-                        </Popover>
+<br />
+<Calendar/>
                         <>
                           {dates.length > 0 && <p>Dates ajoutées:</p>}
                           {dates.map((date, index) => (
