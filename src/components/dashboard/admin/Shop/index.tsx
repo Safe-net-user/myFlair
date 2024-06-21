@@ -2,7 +2,9 @@ import Workplaces from './Workplaces/page';
 import BusinessBoosters from './BusinessBoosters';
 import Services from './Services';
 
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import Formations from './Formations';
 
 const tabs = [
   {
@@ -20,6 +22,11 @@ const tabs = [
     value: 'services',
     component: <Services />,
   },
+  {
+    title: 'Formations',
+    value: 'formations',
+    component: <Formations />,
+  }
 ];
 
 export default function ShopTab() {

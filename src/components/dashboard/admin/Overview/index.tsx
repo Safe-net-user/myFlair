@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { updateUserDatePreferencesByUserId } from '@/data/user';
 import { useUserContext } from '@/contexts/user';
 
-import Table from './Table';
+
 import {
   TransactionsCount,
   TurnoverExcludingTax,
@@ -75,7 +75,7 @@ export default function Overview() {
         </div>
       </div>
 
-      <Table />
+    
     </TabsContent>
   );
 }

@@ -173,7 +173,7 @@ const AddService = () => {
                         type='number'
                         value={service.price}
                         onChange={(e) => handleServiceChange('price', e.target.value)}
-                        placeholder='Exemple: 25'
+                        placeholder='Ex: 25'
                         required
                       />
                       <br />
@@ -195,11 +195,15 @@ const AddService = () => {
                       </Select>
                       <br />
                       <label>Stocks</label>
+                      <br />
+                      <br />
                       <Input
                         type="number"
                         onChange={(e) => handleServiceChange('quantity', e.target.value)}
                         required
+                        placeholder='Ex: 10'
                       />
+                      <br />
                       <div>
                         <label>Description</label>
                         <br />

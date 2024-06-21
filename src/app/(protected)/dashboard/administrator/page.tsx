@@ -1,5 +1,5 @@
 import { Tabs } from '@/components/tabs';
-import { Overview, Shop, Settings } from '@/components/dashboard/admin';
+import { Overview, Shop, Settings, Client, Product, } from '@/components/dashboard/admin';
 
 const tabs = [
   {
@@ -11,6 +11,17 @@ const tabs = [
     title: 'Boutique',
     value: 'shop',
     component: <Shop />,
+  },
+
+  {
+    title: 'Espace Client',
+    value: 'clientArea',
+    component: <Client />,
+  },
+  {
+    title: 'Produits',
+    value: 'product',
+    component: <Product />,
   },
   {
     title: 'Paramètres',

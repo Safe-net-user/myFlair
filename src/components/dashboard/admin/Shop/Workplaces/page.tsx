@@ -151,7 +151,7 @@ const AddPost = () => {
     setIsLoading(true); 
     try {
       const postData = posts[0];
-      const response = await axios.post('/api/post/create', postData, {
+      const response = await axios.post('/api/post', postData, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -237,7 +237,7 @@ const AddPost = () => {
                           type="number"
                           value={post.weekPrice}
                           onChange={(e) => handlePostChange(index, 'weekPrice', e.target.value)}
-                          placeholder="Exemple: 50"
+                          placeholder="Ex: 50"
                           required
                         />
                       </div>
@@ -251,7 +251,7 @@ const AddPost = () => {
                           type="number"
                           value={post.saturdayPrice}
                           onChange={(e) => handlePostChange(index, 'saturdayPrice', e.target.value)}
-                          placeholder="Exemple: 50"
+                          placeholder="Ex: 75"
                           required
                         />
                       </div>
@@ -363,13 +363,11 @@ const AddPost = () => {
   <br />
   <br />
   <Input
-    className="rounded outline-none"
-    type="number"
-    value={post.stock}
-    onChange={(e) => handlePostChange(index, 'stock', parseInt(e.target.value))}
-    placeholder="Stock"
-    required
-  />
+                        type="number"
+                        onChange={(e) => handlePostChange('quantity', e.target.value)}
+                        required
+                        placeholder='Ex: 10'
+                      />
 </div>
 <br/>
                       <div style={{ width: "100%", height: "1px", background: "#EAEAEA" }}></div>
