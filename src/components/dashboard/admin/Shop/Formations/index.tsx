@@ -15,6 +15,7 @@ import { format, addDays } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { CalendarBusinessBooster } from '@/components/calendarBusinessBooster';
 import DisplayFormations from './displayData';
+import { DateRange } from 'react-day-picker';
 
 interface Formation {
   image: string;
@@ -45,11 +46,11 @@ const AddFormation = () => {
     deposit: 0,
   });
   const [images, setImages] = useState<File[]>([]);
-  const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: new Date(),
     to: addDays(new Date(), 30),
   });
-  const [dates, setDates] = useState<{ from: Date; to: Date }[]>([]);
+  const [dates, setDates] = useState<DateRange[]>([]);
 
   const handleFormationChange = (key: keyof Formation, value: any) => {
     setFormation((prevFormation) => ({
@@ -144,6 +145,7 @@ const AddFormation = () => {
       console.error('Erreur lors du téléchargement de l\'image :', error);
     }
   };
+
 
   return (
     <div>
