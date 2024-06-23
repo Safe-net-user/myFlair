@@ -25,29 +25,25 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-interface Client {
+interface Formation {
   id: string;
-  firstName: string;
-  lastName: string;
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  postalCode: string;
-  phoneNumber: string;
-  email: string;
-  status: string;
-  subscription?: string;
-  registrationDate: string;
+  image: string;
+  title: string;
+  description: string;
+  price: number;
+  type: string;
+  quantity: number;
+  alt?: string;
 }
 
-const DisplayClients = () => {
-  const [clients, setClients] = useState<Client[]>([]);
+const DisplayFormations = () => {
+  const [formations, setFormations] = useState<Formation[]>([]);
   const [showDialog, setShowDialog] = useState(false);
-  const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
+  const [selectedFormationId, setSelectedFormationId] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    fetch(`${window.location.origin}/api/clients/get`, {
+    fetch(`${window.location.origin}/api/formations/get`, {
       method: 'GET',
     })
       .then(response => {
@@ -56,24 +52,24 @@ const DisplayClients = () => {
         }
         return response.json();
       })
-      .then((data: Client[]) => {
-        console.log('Clients fetched:', data);
-        setClients(data);
+      .then((data: Formation[]) => {
+        console.log('Formations fetched:', data);
+        setFormations(data);
       })
-      .catch(error => console.error('Error fetching clients', error));
+      .catch(error => console.error('Error fetching formations', error));
   }, []);
 
   const handleDelete = async (id: string) => {
     try {
-      await deleteClientById(id);
+      await deleteFormationById(id);
       router.refresh();
     } catch (error) {
-      console.error('Erreur lors de la suppression du client:', error);
+      console.error('Erreur lors de la suppression de la formation:', error);
     }
   };
 
-  async function deleteClientById(id: string) {
-    const response = await fetch(`/api/clients/delete/${id}/`, {
+  async function deleteFormationById(id: string) {
+    const response = await fetch(`/api/formations/delete/${id}/`, {
       method: 'DELETE',
     });
 
@@ -91,30 +87,31 @@ const DisplayClients = () => {
           <TableHeader>
             <TableRow>
               <TableHead>Id</TableHead>
-              <TableHead>Nom & Prénom</TableHead>
-              <TableHead>Adresse</TableHead>
-              <TableHead>Numéro de téléphone</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Abonnement</TableHead>
-              <TableHead>Date d'inscription</TableHead>
+              <TableHead>Formation</TableHead>
+              <TableHead>Image</TableHead>
+              <TableHead>Tarif</TableHead>
+              <TableHead>Stock</TableHead>
               <TableHead>Action</TableHead>
             </TableRow>
           </TableHeader>
-          {clients.map((client) => (
-            <TableBody key={client.id}>
+          {formations.map((formation) => (
+            <TableBody key={formation.id}>
               <TableRow>
-                <TableCell>n° {client.id}</TableCell>
-                <TableCell>{`${client.firstName} ${client.lastName}`}</TableCell>
-                <TableCell>{`${client.addressLine1}, ${client.addressLine2 || ''}, ${client.city}, ${client.postalCode}`}</TableCell>
-                <TableCell>{client.phoneNumber}</TableCell>
-                <TableCell>{client.email}</TableCell>
-                <TableCell>{client.status}</TableCell>
-                <TableCell>{client.subscription || '-'}</TableCell>
-                <TableCell>{client.registrationDate}</TableCell>
+                <TableCell>n° {formation.id}</TableCell>
+                <TableCell>{formation.title}</TableCell>
+                <TableCell>
+                  <img
+                    src={formation.image}
+                    alt={formation.alt || formation.title}
+                    style={{ width: '100px', height: 'auto', marginBottom: '5px' }}
+                    className="rounded-lg"
+                  />
+                </TableCell>
+                <TableCell>{formation.price} €</TableCell>
+                <TableCell>{formation.quantity}</TableCell>
                 <TableCell>
                   <div className="flex">
-                    <Link href={`/dashboard/administrator/client/${encodeURIComponent(client.id)}`}>
+                    <Link href={`/dashboard/administrator/formation/${encodeURIComponent(formation.id)}`}>
                       <img src="/iconWorkPlace/edit.svg" alt="" />
                     </Link>
                     <AlertDialogTrigger asChild style={{ marginLeft: '20px' }}>
@@ -123,23 +120,23 @@ const DisplayClients = () => {
                         alt=""
                         onClick={() => {
                           setShowDialog(true);
-                          setSelectedClientId(client.id);
+                          setSelectedFormationId(formation.id);
                         }}
                       />
                     </AlertDialogTrigger>
                   </div>
-                  {showDialog && selectedClientId === client.id && (
-                    <AlertDialogContent key={client.id}>
+                  {showDialog && selectedFormationId === formation.id && (
+                    <AlertDialogContent key={formation.id}>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Voulez-vous vraiment supprimer ce client ?</AlertDialogTitle>
+                        <AlertDialogTitle>Voulez-vous vraiment supprimer cette formation ?</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Cette action est irréversible, voulez-vous vraiment le supprimer ?
+                          Cette action est irréversible, voulez-vous vraiment la supprimer ?
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel onClick={() => setShowDialog(false)}>Annuler</AlertDialogCancel>
                         <AlertDialogAction onClick={() => {
-                          handleDelete(client.id);
+                          handleDelete(formation.id);
                           setShowDialog(false);
                         }}>
                           Valider
@@ -157,4 +154,4 @@ const DisplayClients = () => {
   );
 };
 
-export default DisplayClients;
+export default DisplayFormations;

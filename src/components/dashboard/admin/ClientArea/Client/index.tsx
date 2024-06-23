@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import ReactQuill from 'react-quill';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
+import DisplayClients from './displayData';
 
 interface NewClient {
     name: string;
@@ -167,7 +168,7 @@ const AddClient = () => {
     <div>
       <ToastContainer />
       <TabsContent value="clientList" className="space-y-3">
-        <div className="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
+        <div className=" h-full flex-1 flex-col space-y-8 p-8 md:flex">
           <div className="flex items-center justify-between space-y-2">
             <h2 className="text-2xl font-bold tracking-tight">Clients</h2>
             <Dialog>
@@ -180,7 +181,7 @@ const AddClient = () => {
                   <br />
                   <DialogDescription>
                     <div>
-                      <label>Nom du client</label>
+                      <label>Nom du client <span className='text-red-500'>*</span></label>
                       <br />
                       <br />
                       <Input
@@ -192,7 +193,7 @@ const AddClient = () => {
                         required
                       />
                       <br />
-                      <label>Prénom du client</label>
+                      <label>Prénom du client <span className='text-red-500'>*</span></label>
                       <br />
                       <br />
                       <Input
@@ -212,11 +213,11 @@ const AddClient = () => {
                         value={newClient.nameOfSociety}
                         onChange={(e) => handleClientChange('name', e.target.value)}
                         placeholder="Nom de la société"
-                        required
+                        
                       />
                       <br />
                       
-                      <label>Adresse</label>
+                      <label>Adresse <span className='text-red-500'>*</span></label>
                       <br /><br />
                       <Input
                         type="text"
@@ -251,7 +252,7 @@ const AddClient = () => {
                       />
                       <br />
                       <br />
-                      <label>Téléphone</label>
+                      <label>Téléphone <span className='text-red-500'>*</span></label>
                       <br />
                       <br />
                       <Input
@@ -262,7 +263,7 @@ const AddClient = () => {
                         required
                       />
                       <br />
-                      <label>Email</label>
+                      <label>Email <span className='text-red-500'>*</span></label>
                       <br />
                       <br />
                       <Input
@@ -273,7 +274,7 @@ const AddClient = () => {
                         required
                       />
                       <br />
-                      <label>Statut</label>
+                      <label>Statut <span className='text-red-500'>*</span></label>
                       <br />
                       <br />
                       <Select>
@@ -323,7 +324,7 @@ const AddClient = () => {
                         />
                       </div>
                       <br />
-                      <label>Image</label>
+                      <label>Image <span className='text-red-500'>*</span></label>
                       <br />
                       <br />
                       <div
@@ -377,6 +378,7 @@ const AddClient = () => {
               </DialogContent>
             </Dialog>
           </div>
+          <DisplayClients/>
         </div>
       </TabsContent>
     </div>

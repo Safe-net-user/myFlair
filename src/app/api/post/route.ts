@@ -6,8 +6,36 @@ export async function POST(req: NextRequest) {
   try {
     const postData = await req.json();
     console.log('Données reçues:', postData);
+
+    const stock = parseInt(postData.stock, 10);
+    const durationWeekStartHour = parseInt(postData.durationWeekStartHour, 10);
+    const durationWeekStartMinute = parseInt(postData.durationWeekStartMinute, 10);
+    const durationWeekEndHour = parseInt(postData.durationWeekEndHour, 10);
+    const durationWeekEndMinute = parseInt(postData.durationWeekEndMinute, 10);
+    const durationSaturdayStartHour = parseInt(postData.durationSaturdayStartHour, 10);
+    const durationSaturdayStartMinute = parseInt(postData.durationSaturdayStartMinute, 10);
+    const durationSaturdayEndHour = parseInt(postData.durationSaturdayEndHour, 10);
+    const durationSaturdayEndMinute = parseInt(postData.durationSaturdayEndMinute, 10);
+
     const createdPost = await prisma.post.create({
-      data: postData,
+      data: {
+        title: postData.title,
+        weekPrice: postData.weekPrice,
+        saturdayPrice: postData.saturdayPrice,
+        stock: stock,
+        valide: postData.valide,
+        description: postData.description,
+        durationWeekStartHour: durationWeekStartHour,
+        durationWeekStartMinute: durationWeekStartMinute,
+        durationWeekEndHour: durationWeekEndHour,
+        durationWeekEndMinute: durationWeekEndMinute,
+        durationSaturdayStartHour: durationSaturdayStartHour,
+        durationSaturdayStartMinute: durationSaturdayStartMinute,
+        durationSaturdayEndHour: durationSaturdayEndHour,
+        durationSaturdayEndMinute: durationSaturdayEndMinute,
+        image: postData.image,
+        alt: postData.alt,
+      },
     });
 
     console.log('Post créé:', createdPost);

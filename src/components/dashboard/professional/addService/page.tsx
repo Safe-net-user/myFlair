@@ -118,7 +118,7 @@ const AjouterUnService = () => {
         ...servicesWithConvertedDescription[0],
       };
 
-      const response = await fetch('/api/service/addService', {
+      const response = await fetch('/api/service/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
