@@ -89,7 +89,7 @@ export default function GeneralTab() {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <Input {...field} className="w-[250px]" placeholder="Nom" />
+                  <Input {...field} className="" placeholder="Nom" />
                 </FormControl>
               </FormItem>
             )}
@@ -103,7 +103,7 @@ export default function GeneralTab() {
                 <FormControl>
                   <Input
                     {...field}
-                    className="w-[250px]"
+                    className=""
                     placeholder="Prénom"
                   />
                 </FormControl>

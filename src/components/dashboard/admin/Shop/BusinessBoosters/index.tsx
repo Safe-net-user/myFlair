@@ -1,39 +1,21 @@
-"use client";
-
+'use client';
+import React from 'react';
 import type { BusinessBooster } from '@prisma/client';
-
 import * as z from 'zod';
-
 import ReactQuill from 'react-quill';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { addDays, format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { fr } from 'date-fns/locale';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { businessBoosterSchema } from '@/schemas';
-import { getAllBusinessBoosters, createBusinessBooster } from '@/data/services';
-
-// Partie Date picker double 
-
-import { addDays, format } from "date-fns"
-import { Calendar as CalendarIcon } from "lucide-react"
-import { DateRange } from "react-day-picker"
- 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-
 
 import { error, success, toastAction } from '@/components/toast';
 import { ImageUploader } from '@/components/image-uploader';
-
-
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/calendar';
 import {
   Dialog,
   DialogContent,
@@ -45,34 +27,32 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Form, FormItem, FormControl, FormField } from '@/components/ui/form';
-
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { TabsContent } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
 
 import 'react-quill/dist/quill.snow.css';
-
+import { DateRange } from 'react-day-picker';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { TrashIcon } from '@radix-ui/react-icons';
+import { CalendarBusinessBooster } from '@/components/calendarBusinessBooster';
+import DisplayBusinessBoosters from './displayData';
+
 export default function BusinessBoostersTab() {
   const router = useRouter();
   const { toast } = useToast();
 
-  const [businessBoosters, setBusinessBoosters] = useState<BusinessBooster[]>(
-    [],
-  );
-
-  const [currentDate, setCurrentDate] = useState<DateRange>({
+  const [businessBoosters, setBusinessBoosters] = useState<BusinessBooster[]>([]);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: new Date(),
     to: addDays(new Date(), 30),
   });
-
   const [dates, setDates] = useState<DateRange[]>([]);
 
-
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(2022, 0, 20),
-    to: addDays(new Date(2022, 0, 20), 20),
-  })
   const form = useForm<z.infer<typeof businessBoosterSchema>>({
     resolver: zodResolver(businessBoosterSchema),
     defaultValues: {
@@ -86,34 +66,12 @@ export default function BusinessBoostersTab() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof businessBoosterSchema>) {
-    const response = await createBusinessBooster(values);
-
-    if (response) {
-      success(toast, {
-        description: 'Business booster mis à jour',
-      });
-
-      setTimeout(() => router.refresh(), 1000);
-    } else {
-      error(toast, {
-        action: toastAction(form.handleSubmit(onSubmit)),
-      });
-    }
-  }
-
-  useEffect(() => {
-    (async () => setBusinessBoosters(await getAllBusinessBoosters()))();
-  }, []);
-
   return (
     <TabsContent value="business-boosters" className="space-y-4">
-      <div className="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
-        <div  className="flex items-center justify-between space-y-2">
-          <h2 className="text-2xl font-bold tracking-tight">
-            Business boosters
-          </h2>
-    
+      <div className=" h-full flex-1 flex-col space-y-8 p-8 md:flex">
+        <div className="flex items-center justify-between space-y-2">
+          <h2 className="text-2xl font-bold tracking-tight">Business boosters</h2>
+
           <Dialog>
             <DialogTrigger asChild>
               <Button>Ajouter</Button>
@@ -121,17 +79,13 @@ export default function BusinessBoostersTab() {
             <DialogContent className="max-h-screen overflow-y-scroll">
               <ScrollArea>
                 <Form {...form}>
-                  <form style={{paddingLeft:'1%', paddingRight:'1%'}} onSubmit={form.handleSubmit(onSubmit)}>
+                  <form style={{ marginLeft: '1%', marginRight: '1%' }}>
                     <DialogHeader>
                       <DialogTitle>Business booster</DialogTitle>
-                      <DialogDescription>
-                        Ajoutez un business booster.
-                      </DialogDescription>
+                      <DialogDescription>Ajoutez un business booster.
+                        <br />
+                        <br />
                       <div className="space-y-4">
-                       
-                      
-
-                        
                         <label>Titre</label>
                         <FormField
                           control={form.control}
@@ -139,34 +93,13 @@ export default function BusinessBoostersTab() {
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
-                                <Input
-                                  {...field}
-                                  className=""
-                                  placeholder="Titre"
-                                />
+                                <Input {...field} className="" placeholder="Titre" />
                               </FormControl>
                             </FormItem>
                           )}
                         />
                         <br />
-<label htmlFor="">Description</label>
-                        <FormField
-                          control={form.control}
-                          name="description"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                <ReactQuill
-                                  {...field}
-                                  placeholder="Description"
-                                  theme="snow"
-                                />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-                        <br />
-                          <label htmlFor="">Stock</label>
+                        <label>Stock</label>
                         <FormField
                           control={form.control}
                           name="quantity"
@@ -174,9 +107,7 @@ export default function BusinessBoostersTab() {
                             <FormItem>
                               <FormControl>
                                 <Input
-                                  {...form.register('quantity', {
-                                    valueAsNumber: true,
-                                  })}
+                                  {...form.register('quantity', { valueAsNumber: true })}
                                   className=""
                                   placeholder="Quantité"
                                   type="number"
@@ -186,7 +117,7 @@ export default function BusinessBoostersTab() {
                           )}
                         />
                         <br />
-                        <label htmlFor="">Prix</label>
+<label htmlFor="">Prix</label>
                         <FormField
                           control={form.control}
                           name="price"
@@ -194,9 +125,7 @@ export default function BusinessBoostersTab() {
                             <FormItem>
                               <FormControl>
                                 <Input
-                                  {...form.register('price', {
-                                    valueAsNumber: true,
-                                  })}
+                                  {...form.register('price', { valueAsNumber: true })}
                                   className=""
                                   placeholder="Prix"
                                   type="number"
@@ -205,63 +134,72 @@ export default function BusinessBoostersTab() {
                             </FormItem>
                           )}
                         />
-<br />
+                        <br />
+<label htmlFor="">Date</label>
+                        <Popover>
+                          <div className="grid gap-2">
+                            <CalendarBusinessBooster dateRange={dateRange} setDateRange={setDateRange} />
+                          </div>
+                        </Popover>
 
-                        <>
-                          {dates.length > 0 && <p>Dates ajoutées:</p>}
-                          {dates.map((date, index) => (
-                            <div
-                              className="flex items-center gap-2"
-                              key={index}
+                        {dates.length > 0 && <p>Dates ajoutées:</p>}
+                        {dates.map((date, index) => (
+                          <div className="flex items-center gap-2" key={index}>
+                            {date.to ? (
+                              <>
+                                {format(date.from!, 'dd LLL y', { locale: fr })} - {format(date.to!, 'dd LLL y', { locale: fr })}
+                              </>
+                            ) : (
+                              format(date.from!, 'dd LLL y', { locale: fr })
+                            )}
+                            <Button
+                              size="icon"
+                              variant="destructive"
+                              onClick={() => {
+                                const newDates = dates.filter((_, i) => i !== index);
+                                setDates(newDates);
+                                form.setValue('dates', newDates);
+                              }}
                             >
-                              {date.to ? (
-                                <>
-                                  {format(date.from!, 'dd LLL y', {
-                                    locale: fr,
-                                  })}{' '}
-                                  -{' '}
-                                  {format(date.to!, 'dd LLL y', {
-                                    locale: fr,
-                                  })}
-                                </>
-                              ) : (
-                                format(date.from!, 'dd LLL y', {
-                                  locale: fr,
-                                })
-                              )}
-                              <Button
-                                size="icon"
-                                variant="destructive"
-                                onClick={() => {
-                                  dates.splice(index, 1);
-                                  setDates(dates);
-                                }}
-                              >
-                                <TrashIcon className="h-4 w-4" />
-                              </Button>
-                              <br />
-                            </div>
-                          ))}
-                        </>
-                        <Button
-                          onClick={() => {
-                            setDates([...dates, currentDate]);
-                            form.setValue('dates', dates);
+                              <TrashIcon className="h-4 w-4" />
+                            </Button>
+                            <br />
+                          </div>
+                        ))}
 
-                            setCurrentDate({
-                              from: new Date(),
-                              to: addDays(new Date(), 30),
-                            });
+                        <Button
+                          className="flex justify-start"
+                          onClick={() => {
+                            if (dateRange) {
+                              const newDates = [...dates, dateRange];
+                              setDates(newDates);
+                              form.setValue('dates', newDates);
+                            }
                           }}
                           type="button"
                         >
-                          Ajouter une date
+                          Ajouter la date
                         </Button>
+                        <br />
+                        <label htmlFor="">Description</label>
+                        <FormField
+                          control={form.control}
+                          name="description"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <ReactQuill {...field} placeholder="Description" theme="snow" />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
                       </div>
+                      </DialogDescription>
+                      <br />
                     </DialogHeader>
-                    <DialogFooter>
+                 
                       <Button type="submit">Ajouter</Button>
-                    </DialogFooter>
+                
                   </form>
                 </Form>
                 <ScrollBar orientation="vertical" />
@@ -269,8 +207,7 @@ export default function BusinessBoostersTab() {
             </DialogContent>
           </Dialog>
         </div>
-
-       
+        <DisplayBusinessBoosters/>
       </div>
     </TabsContent>
   );

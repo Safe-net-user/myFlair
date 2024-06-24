@@ -22,7 +22,6 @@ import { Cloudinary } from '@cloudinary/url-gen';
 import { Input } from '@/components/ui/input';
 import DisplayWorkPlace from './displayData/page';
 import { secondsToMilliseconds } from 'date-fns';
-
 interface Post {
   image: string;
   title: string;
@@ -151,7 +150,7 @@ const AddPost = () => {
     setIsLoading(true); 
     try {
       const postData = posts[0];
-      const response = await axios.post('/api/post/create', postData, {
+      const response = await axios.post('/api/post', postData, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -196,7 +195,7 @@ const AddPost = () => {
   return (
     <div>
     <TabsContent value="workplaces" className="space-y-4">
-      <div className="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
+      <div className=" h-full flex-1 flex-col space-y-8 p-8 md:flex">
         <div className="flex items-center justify-between space-y-2">
           
           <h2 className="text-2xl font-bold tracking-tight">Postes</h2>
@@ -237,7 +236,8 @@ const AddPost = () => {
                           type="number"
                           value={post.weekPrice}
                           onChange={(e) => handlePostChange(index, 'weekPrice', e.target.value)}
-                          placeholder="Exemple: 50"
+                          onWheel={(e) => e.currentTarget.blur()}
+                          placeholder="Ex: 50"
                           required
                         />
                       </div>
@@ -251,7 +251,8 @@ const AddPost = () => {
                           type="number"
                           value={post.saturdayPrice}
                           onChange={(e) => handlePostChange(index, 'saturdayPrice', e.target.value)}
-                          placeholder="Exemple: 50"
+                          onWheel={(e) => e.currentTarget.blur()}
+                          placeholder="Ex: 75"
                           required
                         />
                       </div>
@@ -267,6 +268,7 @@ const AddPost = () => {
                             min="0"
                             max="23"
                             value={post.durationWeekStartHour}
+                            onWheel={(e) => e.currentTarget.blur()}
                             onChange={(e) => handlePostChange(index, 'durationWeekStartHour', parseInt(e.target.value))}
                             placeholder="HH"
                             required
@@ -277,6 +279,7 @@ const AddPost = () => {
                             type="number"
                             min="0"
                             max="59"
+                            onWheel={(e) => e.currentTarget.blur()}
                             value={post.durationWeekStartMinute}
                             onChange={(e) => handlePostChange(index, 'durationWeekStartMinute', parseInt(e.target.value))}
                             placeholder="MM"
@@ -289,6 +292,7 @@ const AddPost = () => {
                             min="0"
                             max="23"
                             value={post.durationWeekEndHour}
+                            onWheel={(e) => e.currentTarget.blur()}
                             onChange={(e) => handlePostChange(index, 'durationWeekEndHour', parseInt(e.target.value))}
                             placeholder="HH"
                             required
@@ -300,6 +304,7 @@ const AddPost = () => {
                             min="0"
                             max="59"
                             value={post.durationWeekEndMinute}
+                            onWheel={(e) => e.currentTarget.blur()}
                             onChange={(e) => handlePostChange(index, 'durationWeekEndMinute', parseInt(e.target.value))}
                             placeholder="MM"
                             required
@@ -318,6 +323,7 @@ const AddPost = () => {
                             min="0"
                             max="23"
                             value={post.durationSaturdayStartHour}
+                            onWheel={(e) => e.currentTarget.blur()}
                             onChange={(e) => handlePostChange(index, 'durationSaturdayStartHour', parseInt(e.target.value))}
                             placeholder="HH"
                             required
@@ -329,6 +335,7 @@ const AddPost = () => {
                             min="0"
                             max="59"
                             value={post.durationSaturdayStartMinute}
+                            onWheel={(e) => e.currentTarget.blur()}
                             onChange={(e) => handlePostChange(index, 'durationSaturdayStartMinute', parseInt(e.target.value))}
                             placeholder="MM"
                             required
@@ -340,6 +347,7 @@ const AddPost = () => {
                             min="0"
                             max="23"
                             value={post.durationSaturdayEndHour}
+                            onWheel={(e) => e.currentTarget.blur()}
                             onChange={(e) => handlePostChange(index, 'durationSaturdayEndHour', parseInt(e.target.value))}
                             placeholder="HH"
                             required
@@ -351,6 +359,7 @@ const AddPost = () => {
                             min="0"
                             max="59"
                             value={post.durationSaturdayEndMinute}
+                            onWheel={(e) => e.currentTarget.blur()}
                             onChange={(e) => handlePostChange(index, 'durationSaturdayEndMinute', parseInt(e.target.value))}
                             placeholder="MM"
                             required
@@ -363,13 +372,13 @@ const AddPost = () => {
   <br />
   <br />
   <Input
-    className="rounded outline-none"
-    type="number"
-    value={post.stock}
-    onChange={(e) => handlePostChange(index, 'stock', parseInt(e.target.value))}
-    placeholder="Stock"
-    required
-  />
+  onWheel={(e) => e.currentTarget.blur()}
+                        type="number"
+                        value={post.stock}
+                        onChange={(e) => handlePostChange( index,'stock', parseInt(e.target.value))}
+                        required
+                        placeholder='Ex: 10'
+                      />
 </div>
 <br/>
                       <div style={{ width: "100%", height: "1px", background: "#EAEAEA" }}></div>

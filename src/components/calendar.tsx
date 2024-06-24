@@ -24,7 +24,7 @@ export const Calendar = ({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button className="w-[200px]" variant="outline">
+        <Button className="" variant="outline">
           {dateRange?.from ? (
             dateRange?.to ? (
               <>

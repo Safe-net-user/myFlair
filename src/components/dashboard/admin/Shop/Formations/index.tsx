@@ -1,5 +1,4 @@
-"use client";
-
+'use client'
 import React, { useRef, useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -11,9 +10,14 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import ReactQuill from 'react-quill';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import DisplayServices from './displayData/page';
+import { Popover } from '@/components/ui/popover';
+import { format, addDays } from 'date-fns';
+import { fr } from 'date-fns/locale';
+import { CalendarBusinessBooster } from '@/components/calendarBusinessBooster';
+import DisplayFormations from './displayData';
+import { DateRange } from 'react-day-picker';
 
-interface Service {
+interface Formation {
   image: string;
   alt?: string;
   title: string;
@@ -22,35 +26,42 @@ interface Service {
   type: string;
   sales: number;
   quantity: number;
+  deposit: number;
   [key: string]: string | boolean | number | undefined;
 }
 
-const AddService = () => {
+const AddFormation = () => {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [service, setService] = useState<Service>({
+  const [formation, setFormation] = useState<Formation>({
     image: '',
     alt: '',
     title: '',
     description: '',
     price: 0,
-    type:'',
-    sales:0,
+    type: '',
+    sales: 0,
     quantity: 0,
+    deposit: 0,
   });
   const [images, setImages] = useState<File[]>([]);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: new Date(),
+    to: addDays(new Date(), 30),
+  });
+  const [dates, setDates] = useState<DateRange[]>([]);
 
-  const handleServiceChange = (key: keyof Service, value: any) => {
-    setService((prevService) => ({
-      ...prevService,
+  const handleFormationChange = (key: keyof Formation, value: any) => {
+    setFormation((prevFormation) => ({
+      ...prevFormation,
       [key]: value,
     }));
   };
 
   const handleDelete = () => {
     setImages([]);
-    handleServiceChange('image', '');
+    handleFormationChange('image', '');
   };
 
   const uploadImage = async (file: File): Promise<string> => {
@@ -58,7 +69,7 @@ const AddService = () => {
     const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 
     if (!cloudName || !uploadPreset) {
-      throw new Error('Cloudinary environment variables are not properly configured.');
+      throw new Error('Les variables d\'environnement Cloudinary ne sont pas correctement configurées.');
     }
 
     const formData = new FormData();
@@ -72,7 +83,7 @@ const AddService = () => {
       );
       return response.data.secure_url;
     } catch (error) {
-      console.error('Error uploading image:', error);
+      console.error('Erreur lors du téléchargement de l\'image :', error);
       throw error;
     }
   };
@@ -83,37 +94,37 @@ const AddService = () => {
       try {
         const imageUrl = await uploadImage(files[0]);
         setImages([files[0]]);
-        handleServiceChange('image', imageUrl);
+        handleFormationChange('image', imageUrl);
       } catch (error) {
-        console.error('Error uploading image:', error);
+        console.error('Erreur lors du téléchargement de l\'image :', error);
       }
     }
   };
 
   const handleTypeChange = (value: string) => {
-    handleServiceChange('type', value);
+    handleFormationChange('type', value);
   };
 
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.post('/api/serviceAdditionnel/create', service, {
+      const response = await axios.post('/api/formation/create', formation, {
         headers: {
           'Content-Type': 'application/json',
         },
       });
       if (response.status === 200) {
-        toast.success('Service ajouté avec succès');
+        toast.success('Formation ajoutée avec succès');
         setTimeout(() => {
           router.push('/dashboard/professional');
         }, 2000);
       } else {
-        toast.error('Erreur lors de l\'ajout du service');
-        console.log('Error adding service:', response.data);
+        toast.error('Erreur lors de l\'ajout de la formation');
+        console.log('Erreur lors de l\'ajout de la formation :', response.data);
       }
     } catch (error) {
-      toast.error('Erreur lors de l\'ajout du service');
-      console.error('Error:', error);
+      toast.error('Erreur lors de l\'ajout de la formation');
+      console.error('Erreur :', error);
     } finally {
       setIsLoading(false);
     }
@@ -129,38 +140,39 @@ const AddService = () => {
     try {
       const imageUrl = await uploadImage(files[0]);
       setImages(files);
-      handleServiceChange('image', imageUrl);
+      handleFormationChange('image', imageUrl);
     } catch (error) {
-      console.error('Error uploading image:', error);
+      console.error('Erreur lors du téléchargement de l\'image :', error);
     }
   };
+
 
   return (
     <div>
       <ToastContainer />
-      <TabsContent value="services" className="space-y-4">
+      <TabsContent value="formations" className="space-y-4">
         <div className="h-full flex-1 flex-col space-y-8 p-8 md:flex">
           <div className="flex items-center justify-between space-y-2">
-            <h2 className="text-2xl font-bold tracking-tight">Services</h2>
+            <h2 className="text-2xl font-bold tracking-tight">Formations</h2>
             <Dialog>
               <DialogTrigger asChild>
                 <Button>Ajouter</Button>
               </DialogTrigger>
               <DialogContent className="max-h-screen overflow-y-scroll">
                 <DialogHeader>
-                  <DialogTitle>Ajouter un service</DialogTitle>
+                  <DialogTitle>Ajouter une formation</DialogTitle>
                   <DialogDescription>
                     <div>
                       <div>
-                        <label>Titre du service</label>
+                        <label>Titre de la formation</label>
                         <br />
                         <br />
                         <Input
                           className="rounded outline-none"
                           type="text"
-                          value={service.title}
-                          onChange={(e) => handleServiceChange('title', e.target.value)}
-                          placeholder="Ex: Location de sèche-cheveux"
+                          value={formation.title}
+                          onChange={(e) => handleFormationChange('title', e.target.value)}
+                          placeholder="Exemple: Formation Canvas"
                           required
                         />
                       </div>
@@ -171,35 +183,30 @@ const AddService = () => {
                       <Input
                         className='rounded outline-none'
                         type='number'
-                        value={service.price}
-                        onChange={(e) => handleServiceChange('price', e.target.value)}
-                        placeholder='Ex: 25'
+                        value={formation.price}
+                        onChange={(e) => handleFormationChange('price', e.target.value)}
+                        placeholder='Ex: 250'
                         required
                       />
                       <br />
-                      <label>Type de location</label>
+                      <label>Acompte à verser</label>
                       <br />
                       <br />
-                      <Select onValueChange={handleTypeChange}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sélectionner un type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup >
-                            <SelectLabel>Type</SelectLabel>
-                            <SelectItem value="day">par Jour</SelectItem>
-                            <SelectItem value="piece">par Pièce</SelectItem>
-                            <SelectItem value="page">par Page</SelectItem>   
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
+                      <Input
+                        className='rounded outline-none'
+                        type='number'
+                        value={formation.deposit}
+                        onChange={(e) => handleFormationChange('deposit', e.target.value)}
+                        placeholder='Ex: 50'
+                        required
+                      />
                       <br />
                       <label>Stocks</label>
                       <br />
                       <br />
                       <Input
                         type="number"
-                        onChange={(e) => handleServiceChange('quantity', e.target.value)}
+                        onChange={(e) => handleFormationChange('quantity', e.target.value)}
                         required
                         placeholder='Ex: 10'
                       />
@@ -209,11 +216,59 @@ const AddService = () => {
                         <br />
                         <br />
                         <ReactQuill
-                          value={service.description}
-                          onChange={(value) => handleServiceChange('description', value)}
+                          value={formation.description}
+                          onChange={(value) => handleFormationChange('description', value)}
                           placeholder="Rédiger votre description..."
                         />
                       </div>
+                      <br />
+                      <label>Date</label>
+                      <br />
+                      <br />
+                      <Popover>
+                        <div className="grid gap-2">
+                          <CalendarBusinessBooster dateRange={dateRange} setDateRange={setDateRange} />
+                        </div>
+                      </Popover>
+                      <br />
+                      {dates.length > 0 && <p>Dates ajoutées:</p>}
+                      <br />
+                      {dates.map((date, index) => (
+                        <div className="flex items-center gap-2" key={index}>
+                          {date.to ? (
+                            <>
+                              {format(date.from!, 'dd LLL y', { locale: fr })} - {format(date.to!, 'dd LLL y', { locale: fr })}
+                            </>
+                          ) : (
+                            format(date.from!, 'dd LLL y', { locale: fr })
+                          )}
+                          <Button
+                            size="icon"
+                            variant="destructive"
+                            onClick={() => {
+                              const newDates = dates.filter((_, i) => i !== index);
+                              setDates(newDates);
+                            }}
+                          >
+                            <img src="/iconWorkPlace/trash-2-3.svg" alt="Delete" className="h-4 w-4" />
+                          </Button>
+                          <br />
+                          <br />
+                        </div>
+                      ))}
+                      <br />
+                      <Button
+                        className="flex justify-start"
+                        onClick={() => {
+                          if (dateRange) {
+                            const newDates = [...dates, dateRange];
+                            setDates(newDates);
+                          }
+                        }}
+                        type="button"
+                      >
+                        Ajouter la date
+                      </Button>
                       <br />
                       <div>
                         <label>Image</label>
@@ -256,7 +311,7 @@ const AddService = () => {
                                 />
                                 <div style={{ position: 'absolute', top: '5px', right: '5px' }}>
                                   <button className="rounded-full" style={{ padding: '5px', background: 'red' }} onClick={handleDelete}>
-                                    <img src="/iconService/trashWhite.svg" alt="Delete" />
+                                    <img src="/iconFormation/trashWhite.svg" alt="Delete" />
                                   </button>
                                 </div>
                               </div>
@@ -270,14 +325,12 @@ const AddService = () => {
                 </DialogHeader>
               </DialogContent>
             </Dialog>
-            
           </div>
-          <DisplayServices/>
+          <DisplayFormations/>
         </div>
       </TabsContent>
-      
     </div>
   );
 };
 
-export default AddService;
+export default AddFormation;

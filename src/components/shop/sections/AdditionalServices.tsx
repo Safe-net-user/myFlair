@@ -81,14 +81,15 @@ export default function AdditionalServices() {
       {additionalServices?.map((additionalService) => (
         <Dialog key={additionalService.id}>
           <Card>
-            <CardHeader>
-              <Image
+          <Image
                 className="w-full rounded-md"
                 src={additionalService.image}
                 alt={additionalService.alt}
                 width={1000}
                 height={1000}
               />
+            <CardHeader>
+              
             </CardHeader>
 
             <CardContent>
@@ -104,10 +105,10 @@ export default function AdditionalServices() {
                   Quantité:
                   <Input
                     className="w-[100px]"
-                    value={quantity[additionalService.id] || 1}
+                    
                     max={additionalService.quantity}
                     onChange={(e) => handleServiceChange(additionalService.id, Number(e.target.value))}
-                    placeholder="Quantité"
+                    placeholder="0"
                     type="number"
                   />
                   {quantity[additionalService.id] === additionalService.quantity &&(
