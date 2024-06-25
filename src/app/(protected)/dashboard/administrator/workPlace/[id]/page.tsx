@@ -72,6 +72,7 @@ const EditPost = ({ params }: { params: { id: string } }) => {
         setStock(postData.stock);
         setValide(postData.valide);
         setAlt(postData.alt);
+        console.log(setDescription(postData.description))
       } catch (error) {
         console.error('Erreur lors de la récupération du post :', error);
       }
@@ -115,13 +116,17 @@ const EditPost = ({ params }: { params: { id: string } }) => {
   };
 
   if (!post) {
-    return <div>Chargement en cours...</div>;
+    return <div className='flex flex-col justify-center items-center'>Chargement en cours...</div>;
   }
 
   return (
-    <div>
-      <h1>Modifier le Post</h1>
-      <form onSubmit={handleSubmit}>
+    <div className=" h-full flex-1 flex-col space-y-8 p-8 md:flex">
+    <div className="flex items-center justify-between space-y-2">
+
+      <h2 className="text-2xl font-bold tracking-tight">Modification des Postes</h2>
+      </div>
+      <div style={{margin: '0 auto'}} className='flex flex-col justify-center items-center'>
+      <form onSubmit={handleSubmit} style={{margin:'3%'}}>
         <div>
           <label>Titre</label>
           <Input
@@ -130,108 +135,157 @@ const EditPost = ({ params }: { params: { id: string } }) => {
             onChange={(e) => setTitle(e.target.value)}
           />
         </div>
+        <br />
         <div>
           <label>Description</label>
           <br />
-          <br />
+
           <ReactQuill
             value={description}
             onChange={(value) => setDescription(value)}
             placeholder="Rédigez votre description..."
           />
         </div>
+        <br />
         <div>
-          <label>Heure de début de la semaine</label>
+                        <label>Heures d'ouverture en semaine</label>
+                        <br />
+                        <br />
+                        <div className="flex space-x-2 items-center">
+                          <Input
+                            className="text-lg rounded outline-none"
+                            type="number"
+                            min="0"
+                            max="23"
+                            value={post.durationWeekStartHour}
+                            onWheel={(e) => e.currentTarget.blur()}
+                  
+                            placeholder="HH"
+                            required
+                          />
+                          <span>h</span>
+                          <Input
+                            className="text-lg rounded outline-none"
+                            type="number"
+                            min="0"
+                            max="59"
+                            onWheel={(e) => e.currentTarget.blur()}
+                            value={post.durationWeekStartMinute}
+                         
+                            placeholder="MM"
+                            required
+                          />
+                          <span>à</span>
+                          <Input
+                            className="text-lg rounded outline-none"
+                            type="number"
+                            min="0"
+                            max="23"
+                            value={post.durationWeekEndHour}
+                            onWheel={(e) => e.currentTarget.blur()}
+                            placeholder="HH"
+                            required
+                          />
+                          <span>h</span>
+                          <Input
+                            className="text-lg rounded outline-none"
+                            type="number"
+                            min="0"
+                            max="59"
+                            value={post.durationWeekEndMinute}
+                            onWheel={(e) => e.currentTarget.blur()}
+                            placeholder="MM"
+                            required
+                          />
+                        </div>
+                      </div>
+                      <br />
+                      <div>
+                        <label>Heures d'ouverture le samedi</label>
+                        <br />
+                        <br />
+                        <div className="flex space-x-2 items-center">
+                          <Input
+                            className="text-lg rounded outline-none"
+                            type="number"
+                            min="0"
+                            max="23"
+                            value={post.durationSaturdayStartHour}
+                            onWheel={(e) => e.currentTarget.blur()}
+                            placeholder="HH"
+                            required
+                          />
+                          <span>h</span>
+                          <Input
+                            className="text-lg rounded outline-none"
+                            type="number"
+                            min="0"
+                            max="59"
+                            value={post.durationSaturdayStartMinute}
+                            onWheel={(e) => e.currentTarget.blur()}
+                            placeholder="MM"
+                            required
+                          />
+                          <span>à</span>
+                          <Input
+                            className="text-lg rounded outline-none"
+                            type="number"
+                            min="0"
+                            max="23"
+                            value={post.durationSaturdayEndHour}
+                            onWheel={(e) => e.currentTarget.blur()}
+                            placeholder="HH"
+                            required
+                          />
+                          <span>h</span>
+                          <Input
+                            className="text-lg rounded outline-none"
+                            type="number"
+                            min="0"
+                            max="59"
+                            value={post.durationSaturdayEndMinute}
+                            onWheel={(e) => e.currentTarget.blur()}
+                            placeholder="MM"
+                            required
+                          />
+                        </div>
+                        </div>
+        <br />
+        <div>
+          <label>Prix durant le Semaine</label>
           <Input
             type="number"
-            value={durationWeekStartHour}
-            onChange={(e) => setDurationWeekStartHour(parseInt(e.target.value))}
+            value={post.weekPrice}
+          //  onChange={(e) => setWeekPrice(parseInt(e.target.value))}
           />
         </div>
+        <br />
         <div>
-          <label>Minute de début de la semaine</label>
+          <label>Prix durant le Samedi</label>
           <Input
             type="number"
-            value={durationWeekStartMinute}
-            onChange={(e) => setDurationWeekStartMinute(parseInt(e.target.value))}
+            value={post.saturdayPrice}
+           // onChange={(e) => setSaturdayPrice(parseInt(e.target.value))}
           />
         </div>
-        <div>
-          <label>Heure de fin de la semaine</label>
-          <Input
-            type="number"
-            value={durationWeekEndHour}
-            onChange={(e) => setDurationWeekEndHour(parseInt(e.target.value))}
-          />
-        </div>
-        <div>
-          <label>Minute de fin de la semaine</label>
-          <Input
-            type="number"
-            value={durationWeekEndMinute}
-            onChange={(e) => setDurationWeekEndMinute(parseInt(e.target.value))}
-          />
-        </div>
-        <div>
-          <label>Heure de début du samedi</label>
-          <Input
-            type="number"
-            value={durationSaturdayStartHour}
-            onChange={(e) => setDurationSaturdayStartHour(parseInt(e.target.value))}
-          />
-        </div>
-        <div>
-          <label>Minute de début du samedi</label>
-          <Input
-            type="number"
-            value={durationSaturdayStartMinute}
-            onChange={(e) => setDurationSaturdayStartMinute(parseInt(e.target.value))}
-          />
-        </div>
-        <div>
-          <label>Heure de fin du samedi</label>
-          <Input
-            type="number"
-            value={durationSaturdayEndHour}
-            onChange={(e) => setDurationSaturdayEndHour(parseInt(e.target.value))}
-          />
-        </div>
-        <div>
-          <label>Minute de fin du samedi</label>
-          <Input
-            type="number"
-            value={durationSaturdayEndMinute}
-            onChange={(e) => setDurationSaturdayEndMinute(parseInt(e.target.value))}
-          />
-        </div>
-        <div>
-          <label>Prix de la semaine</label>
-          <Input
-            type="text"
-            value={weekPrice}
-            onChange={(e) => setWeekPrice(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>Prix du samedi</label>
-          <Input
-            type="text"
-            value={saturdayPrice}
-            onChange={(e) => setSaturdayPrice(e.target.value)}
-          />
-        </div>
+        <br />
         <div>
           <label>Stock</label>
           <Input
             type="number"
             value={stock}
-            onChange={(e) => setStock(parseInt(e.target.value))}
+         //   onChange={(e) => setStock(parseInt(e.target.value))}
           />
         </div>
-        
+        <br />
+        <br />
         <Button type="submit">Enregistrer les modifications</Button>
       </form>
+      <br />
+      <br />
+      </div>
     </div>
+
   );
 };
 

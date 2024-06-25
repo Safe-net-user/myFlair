@@ -23,6 +23,7 @@ interface Category {
     key: string;
 }
 import { useRouter } from 'next/navigation';
+import DisplayCategory from './displayData/page';
 export default function Category() {
     const [categories, setCategories] = useState<Category[]>([
         {
@@ -227,6 +228,7 @@ export default function Category() {
                         </DialogContent>
                     </Dialog>
                 </div>
+                <DisplayCategory/>
             </div>
         </TabsContent>
     )

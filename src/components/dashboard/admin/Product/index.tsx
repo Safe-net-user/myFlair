@@ -1,11 +1,17 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import SuscribeTab from './Suscribe';
 
 
 const tabs = [
 {
     title:'Abonnements',
     value:'suscribe',
-    component:<ProductTab/>
+    component:<SuscribeTab/>
+},
+{
+  title:'Commandes',
+  value:'orders',
+  
 }
 ];
 

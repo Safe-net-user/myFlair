@@ -111,7 +111,7 @@ const DisplayServices = () => {
                 <TableCell>{service.quantity}</TableCell>
                 <TableCell>
                   <div className="flex">
-                    <Link href={`/dashboard/administrator/service/${encodeURIComponent(service.id)}`}>
+                    <Link href={`/dashboard/administrator/Services/${encodeURIComponent(service.id)}`}>
                       <img src="/iconWorkPlace/edit.svg" alt="" />
                     </Link>
                     <AlertDialogTrigger asChild style={{ marginLeft: '20px' }}>

@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import ReactQuill from 'react-quill';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import DisplayServices from './displayData/page';
+import Link from 'next/link';
 
 interface Service {
   image: string;
@@ -254,6 +255,7 @@ const AddService = () => {
                                   style={{ width: '100px', height: 'auto', marginBottom: '5px' }}
                                   className="rounded-lg"
                                 />
+
                                 <div style={{ position: 'absolute', top: '5px', right: '5px' }}>
                                   <button className="rounded-full" style={{ padding: '5px', background: 'red' }} onClick={handleDelete}>
                                     <img src="/iconService/trashWhite.svg" alt="Delete" />
