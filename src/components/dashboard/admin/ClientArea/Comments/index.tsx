@@ -30,7 +30,7 @@ const AviData = [
 
     }
 ];
-import {Button} from '@/components/ui/Button'
+import {Button} from '@/components/ui/button'
 function StarRatingPro() {
     return (
         <Rate disabled defaultValue={AviData[0].rate} />

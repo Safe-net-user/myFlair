@@ -38,8 +38,8 @@ import {
     SelectValue,
   } from "@/components/ui/select"
 
-import { Button } from "@/components/ui/Button"
-import { Input } from "@/components/ui/Input"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 const Abonnement = [
     {
         id: 1,
@@ -233,11 +233,7 @@ export default function SuscribeTab() {
                                 <SelectValue placeholder="Type d'abonnement" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectGroup>
-                                    <SelectLabel>Type d'abonnement</SelectLabel>
-                                    <SelectItem>Gestion planning Mensuel</SelectItem>
-                                    <SelectItem>Gestion planning Annuel</SelectItem>
-                                </SelectGroup>
+                                
                             </SelectContent>
                            </Select>
                            </div>

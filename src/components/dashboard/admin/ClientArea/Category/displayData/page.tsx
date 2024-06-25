@@ -27,17 +27,7 @@ import { useRouter } from "next/navigation";
 
 interface Client {
   id: string;
-  firstName: string;
-  lastName: string;
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  postalCode: string;
-  phoneNumber: string;
-  email: string;
-  status: string;
-  subscription?: string;
-  registrationDate: string;
+
 }
 
 const DisplayCategory = () => {
@@ -45,14 +35,7 @@ const DisplayCategory = () => {
   const [showDialog, setShowDialog] = useState(false);
   
 
-  const handleDelete = async (id: string) => {
-    try {
-      await deleteCategorytById(id);
-      router.refresh();
-    } catch (error) {
-      console.error('Erreur lors de la suppression de la catégorie:', error);
-    }
-  };
+ 
 
   async function deleteCategorytById(id: string) {
     const response = await fetch(`/api/category/delete/${id}/`, {
@@ -82,8 +65,8 @@ const DisplayCategory = () => {
             <TableBody key={category.id}>
               <TableRow>
                 <TableCell>n° {category.id}</TableCell>
-                <TableCell>n° {category.title}</TableCell>
-                <TableCell>n° {category.image}</TableCell>
+                <TableCell></TableCell>
+                <TableCell></TableCell>
                 
                 <TableCell>
                   <div className="flex">
@@ -96,12 +79,16 @@ const DisplayCategory = () => {
                         alt=""
                         onClick={() => {
                           setShowDialog(true);
-                          setSelectedCategoryId(category.id);
+                         // setSelectedCategoryId(category.id);
                         }}
                       />
                     </AlertDialogTrigger>
                   </div>
-                  {showDialog && selectedCategoryId === category.id && (
+             
+
+                  //showDialog && selectedCategoryId === category.id &&
+              
+                 { (
                     <AlertDialogContent key={category.id}>
                       <AlertDialogHeader>
                         <AlertDialogTitle>Voulez-vous vraiment supprimer cette Catégorie ?</AlertDialogTitle>
@@ -112,7 +99,7 @@ const DisplayCategory = () => {
                       <AlertDialogFooter>
                         <AlertDialogCancel onClick={() => setShowDialog(false)}>Annuler</AlertDialogCancel>
                         <AlertDialogAction onClick={() => {
-                          handleDelete(category.id);
+                          //handleDelete(category.id);
                           setShowDialog(false);
                         }}>
                           Valider
